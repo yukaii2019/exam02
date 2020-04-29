@@ -48,8 +48,10 @@ typedef struct POS{
 
 POS position[100];
 int tilt_than_45[100];
-float moves[100];
-float m =0;
+float moves_x[100];
+float moves_y[100];
+float m_x=0;
+float m_y=0;
 
 void blink_led1(){
         led1 = !led1;
@@ -62,9 +64,9 @@ void FXOS8700CQ_readRegs(int addr, uint8_t * data, int len) {
 void FXOS8700CQ_writeRegs(uint8_t * data, int len) {
    i2c.write(m_addr, (char *)data, len);
 }
-float dispacement_function(float x,float y){
-    float acc_square = x*x+y*y;
-    float displacement = (9.8*sqrt(acc_square)*0.1*0.1)*1./2;
+float dispacement_function(float x){
+    float displacement;
+        displacement = (9.8*x*0.1*0.1)*1./2;
     return displacement;
 }
 void accelerometer(){
@@ -120,12 +122,15 @@ void accelerometer(){
         else {
             tilt_than_45[i] = 0;
         }*/
-            moves[i] = dispacement_function(position[i].x,position[i].y);
-            m = m+moves[i];
+            moves_x[i] = dispacement_function(position[i].x);
+            moves_y[i] = dispacement_function(position[i].y);
+            m_x = m_x+moves_x[i];
+            m_y = m_y+moves_y[i];
+            float  dis = sqrt(m_x*m_x+m_y*m_y);
             pc.printf("%f\r\n",position[i].x);
             pc.printf("%f\r\n",position[i].y);
             pc.printf("%f\r\n",position[i].z);
-            pc.printf("%f\r\n",m);
+            pc.printf("%f\r\n",dis);
             //wait(0.5);
     }  
 }
